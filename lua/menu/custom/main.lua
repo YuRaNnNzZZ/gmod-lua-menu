@@ -12,7 +12,8 @@ language.Add( "achievements", "Achievements" )
 surface.CreateFont( "MenuButton", {
 	font	= "Helvetica",
 	size	= 24,
-	weight	= 600
+	weight	= 600,
+	extended	= true
 } )
 
 local DLabel = baseclass.Get( "DLabel" )

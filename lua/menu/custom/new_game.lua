@@ -18,32 +18,38 @@ Figure out fonts? The current ones look neat but blurry
 surface.CreateFont( "StartNewGameFont", {
 	font = "Roboto Lt",
 	size = 18,
+	extended = true
 } )
 
 surface.CreateFont( "SingleMultiPlayer", {
 	font = "Roboto Lt",
 	size = 17,
+	extended = true
 } )
 
 surface.CreateFont( "DermaRobotoDefault", {
 	font = "Roboto Lt",
-	size = 13
+	size = 13,
+	extended = true
 } )
 
 surface.CreateFont( "StartNewGame", {
 	font = "Roboto",
 	size = 30,
+	extended = true
 } )
 
 surface.CreateFont( "rb655_MapList", {
 	size = 12,
-	font = "Tahoma"
+	font = "Tahoma",
+	extended = true
 } )
 
 surface.CreateFont( "rb655_MapSubCat", {
 	size = 30,
 	--weight = 900,
-	font = "Roboto Lt"
+	font = "Roboto Lt",
+	extended = true
 } )
 
 local noise = Material( "gui/noise.png", "nocull noclamp smooth" )
