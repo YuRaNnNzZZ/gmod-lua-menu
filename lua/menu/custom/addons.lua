@@ -123,7 +123,11 @@ function PANEL:Paint( w, h )
 		surface.SetMaterial( missingMat )
 	end
 	local imageSize = self:GetTall() - 10
-	surface.SetDrawColor( color_white )
+	if ( self.Hovered || self:GetSelected() || ( self.Addon && steamworks.ShouldMountAddon( self.Addon.wsid ) ) ) then
+		surface.SetDrawColor( color_white )
+	else
+		surface.SetDrawColor( 127, 127, 127, 127 )
+	end
 	surface.DrawTexturedRect( 5, 5, imageSize, imageSize )
 
 	if ( gDataTable[ self.Addon.wsid ] && gDataTable[ self.Addon.wsid ].VoteData ) then
@@ -244,17 +248,20 @@ local Grouping = {
 				if ( !gDataTable[ addon.wsid ] ) then
 					table.insert( t.noinfo.addons, addon )
 				else
-					local Ptags = { servercontent = "Server Content", effects = "Effects", model = "Model", gamemode = "Gamemode", npc = "NPC", tool = "Tool", vehicle = "Vehicle", weapon = "Weapon", map = "Map" }
+					local pTags = { servercontent = "Server Content", effects = "Effects", model = "Model", gamemode = "Gamemode", npc = "NPC", tool = "Tool", vehicle = "Vehicle", weapon = "Weapon", map = "Map" }
 					local tags = string.Explode( ",", gDataTable[ addon.wsid ].tags )
-					for _, tag in pairs( tags ) do
-						if ( tag == "Addon" ) then continue end -- Don't duplicate ALL addons
-						if ( !Ptags[ tag:lower() ] ) then tag = "Other" end
-						tag = Ptags[ tag:lower() ] or tag
-						if ( !t[ tag ] ) then t[ tag ] = { title = tag, addons = {} } end
 
-						table.insert( t[ tag ].addons, addon )
-						break
+					local pTag = "Other"
+					for _, tag in pairs( tags ) do
+						if ( pTags[ tag:lower() ] ) then
+							pTag = pTags[ tag:lower() ]
+
+							break
+						end
 					end
+
+					if ( !t[ pTag ] ) then t[ pTag ] = { title = pTag, addons = {} } end
+					table.insert( t[ pTag ].addons, addon )
 				end
 			end
 
@@ -380,6 +387,14 @@ function PANEL:Init()
 	OpenWorkshop:DockMargin( 0, 40, 0, 0 )
 	OpenWorkshop.DoClick = function() steamworks.OpenWorkshop() end
 
+	local Search = vgui.Create( "DTextEntry", Categories )
+	Search:Dock( TOP )
+	Search:SetTall( 30 )
+	Search:DockMargin( 0, 5, 0, 0 )
+	Search:SetPlaceholderText( "Search addons..." )
+	Search.OnChange = function() self:RefreshAddons() end
+	self.Search = Search
+
 	------------------- Addon List
 
 	local Scroll = vgui.Create( "DScrollPanel", self )
@@ -497,12 +512,16 @@ function PANEL:RefreshAddons()
 			pnl:SizeToContents()
 		end
 
-		for id, mod in SortedPairsByMemberValue( addns, "title" ) do
+		local filter = string.lower( self.Search:GetValue() || "" )
 
-			local pnl = self.AddonList:Add( "MenuAddon" )
-			pnl.panel = self
-			pnl:SetAddon( mod )
-			pnl:DockMargin( 0, 0, 5, 5 )
+		for id, mod in SortedPairsByMemberValue( addns, "timeadded", true ) do
+
+			if ( filter == "" || string.find( string.lower( mod.title ), filter, 1, true ) ) then
+				local pnl = self.AddonList:Add( "MenuAddon" )
+				pnl.panel = self
+				pnl:SetAddon( mod )
+				pnl:DockMargin( 0, 0, 5, 5 )
+			end
 
 		end
 
