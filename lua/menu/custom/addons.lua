@@ -70,12 +70,6 @@ function PANEL:SetAddon( data )
 	if ( gDataTable[ data.wsid ] ) then self.AdditionalData = gDataTable[ data.wsid ] return end
 
 	steamworks.FileInfo( data.wsid, function( result )
-		steamworks.VoteInfo( data.wsid, function( result )
-			if ( gDataTable[ data.wsid ] ) then
-				gDataTable[ data.wsid ].VoteData = result
-			end
-		end )
-
 		gDataTable[ data.wsid ] = result
 
 		if ( !file.Exists( 'cache/workshop/' .. result.previewid .. '.cache',"GAME" ) ) then
@@ -130,8 +124,8 @@ function PANEL:Paint( w, h )
 	end
 	surface.DrawTexturedRect( 5, 5, imageSize, imageSize )
 
-	if ( gDataTable[ self.Addon.wsid ] && gDataTable[ self.Addon.wsid ].VoteData ) then
-		local ratio = gDataTable[ self.Addon.wsid ].VoteData.score
+	if ( gDataTable[ self.Addon.wsid ] ) then
+		local ratio = gDataTable[ self.Addon.wsid ].score
 		local w = math.floor( ( self:GetWide() - 10 ) * ratio )
 
 		for i = -5, -1 do
@@ -171,11 +165,10 @@ size	=	678048
 tags	=	Addon,map
 title	=	PHYS_Tower
 updated	=	1434256768
-VoteData:
-		down	=	137
-		score	=	0.80042690038681
-		total	=	837
-		up	=	700
+down	=	137
+score	=	0.80042690038681
+total	=	837
+up	=	700
 banned	=	false
 created	=	1357573632
 description	=
