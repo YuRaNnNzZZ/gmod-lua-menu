@@ -238,24 +238,20 @@ local Grouping = {
 			}
 
 			for _, addon in pairs( engine.GetAddons() ) do
-				if ( !gDataTable[ addon.wsid ] ) then
-					table.insert( t.noinfo.addons, addon )
-				else
-					local pTags = { servercontent = "Server Content", effects = "Effects", model = "Model", gamemode = "Gamemode", npc = "NPC", tool = "Tool", vehicle = "Vehicle", weapon = "Weapon", map = "Map" }
-					local tags = string.Explode( ",", gDataTable[ addon.wsid ].tags )
+				local pTags = { servercontent = "Server Content", effects = "Effects", model = "Model", gamemode = "Gamemode", npc = "NPC", tool = "Tool", vehicle = "Vehicle", weapon = "Weapon", map = "Map" }
+				local tags = string.Explode( ",", gDataTable[ addon.wsid ] && gDataTable[ addon.wsid ].tags || addon.tags )
 
-					local pTag = "Other"
-					for _, tag in pairs( tags ) do
-						if ( pTags[ tag:lower() ] ) then
-							pTag = pTags[ tag:lower() ]
+				local pTag = "Other"
+				for _, tag in pairs( tags ) do
+					if ( pTags[ tag:lower() ] ) then
+						pTag = pTags[ tag:lower() ]
 
-							break
-						end
+						break
 					end
-
-					if ( !t[ pTag ] ) then t[ pTag ] = { title = pTag, addons = {} } end
-					table.insert( t[ pTag ].addons, addon )
 				end
+
+				if ( !t[ pTag ] ) then t[ pTag ] = { title = pTag, addons = {} } end
+				table.insert( t[ pTag ].addons, addon )
 			end
 
 			return t
