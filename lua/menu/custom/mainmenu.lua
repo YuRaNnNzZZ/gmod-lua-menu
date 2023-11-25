@@ -483,6 +483,12 @@ function UpdateMapList()
 	if ( IsValid( self.AchievementsFrame ) ) then self:OpenAchievementsMenu() end]]
 end
 
+hook.Add( "WorkshopSubscriptionsChanged", "WorkshopSubscriptionsChanged", function( msg )
+	if ( !IsValid( pnlMainMenu ) ) then return end
+
+	pnlMainMenu:RefreshAddons()
+end )
+
 hook.Add( "GameContentChanged", "RefreshMainMenu", function()
 	if ( !IsValid( pnlMainMenu ) ) then return end
 
