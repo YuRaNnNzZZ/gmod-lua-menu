@@ -28,7 +28,9 @@ end
 
 function PANEL:OnMouseReleased( mousecode )
 
-	if ( mousecode == MOUSE_RIGHT ) then
+	if ( mousecode == MOUSE_LEFT ) then
+		self:SetSelected( !self:GetSelected() )
+	elseif ( mousecode == MOUSE_RIGHT ) then
 
 		local m = DermaMenu()
 
