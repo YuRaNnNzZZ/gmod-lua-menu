@@ -400,6 +400,45 @@ function PANEL:Init()
 
 	// ------------------------------------------------------------------------- //
 
+	local CreatePreset = vgui.Create( "DButton", Categories )
+	CreatePreset:Dock( TOP )
+	CreatePreset:SetText( "Create Preset" )
+	CreatePreset:SetTall( 15 )
+	CreatePreset:DockMargin( 0, 5, 0, 0 )
+	CreatePreset.DoClick = function()
+		if ( IsValid( self.PresetsPopup ) ) then
+			self.PresetsPopup:Remove()
+		end
+
+		self.PresetsPopup = vgui.Create( "CreatePresetPanel", self )
+	end
+
+	local LoadPreset = vgui.Create( "DButton", Categories )
+	LoadPreset:Dock( TOP )
+	LoadPreset:SetText( "Load Preset" )
+	LoadPreset:SetTall( 15 )
+	LoadPreset:DockMargin( 0, 5, 0, 0 )
+	LoadPreset.DoClick = function()
+		if ( IsValid( self.PresetsPopup ) ) then
+			self.PresetsPopup:Remove()
+		end
+
+		self.PresetsPopup = vgui.Create( "LoadPresetPanel", self )
+	end
+
+	local ImportPreset = vgui.Create( "DButton", Categories )
+	ImportPreset:Dock( TOP )
+	ImportPreset:SetText( "Import Preset" )
+	ImportPreset:SetTall( 15 )
+	ImportPreset:DockMargin( 0, 5, 0, 0 )
+	ImportPreset.DoClick = function()
+		if ( IsValid( self.PresetsPopup ) ) then
+			self.PresetsPopup:Remove()
+		end
+
+		self.PresetsPopup = vgui.Create( "ImportPresetPanel", self )
+	end
+
 	local OpenWorkshop = vgui.Create( "DButton", Categories )
 	OpenWorkshop:Dock( TOP )
 	OpenWorkshop:SetText( "#Open Workshop" )
