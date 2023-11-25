@@ -174,35 +174,63 @@ created	=	1357573632
 description	=
 */
 
+local PrimaryTags = {
+	servercontent = "Server Content",
+	effects = "Effects",
+	model = "Model",
+	gamemode = "Gamemode",
+	npc = "NPC",
+	tool = "Tool",
+	vehicle = "Vehicle",
+	weapon = "Weapon",
+	map = "Map",
+}
+
 local AddonFilters = {
-	none = {
+	{
 		label = "None",
 		func = function( mod )
 			return true
 		end
 	},
-	enabled = {
+	{
 		label = "Enabled",
 		func = function( mod )
 			return mod.mounted
 		end
 	},
-	disabled = {
+	{
 		label = "Disabled",
 		func = function( mod )
 			return !mod.mounted
 		end
 	},
 }
+for k, v in pairs( PrimaryTags ) do
+	table.insert( AddonFilters, {
+		label = v,
+		func = function( mod )
+			local tags = string.Explode( ",", mod.tags )
+
+			for _, tag in ipairs( tags ) do
+				if ( tag:lower() == k ) then
+					return true
+				end
+			end
+
+			return false
+		end
+	} )
+end
 
 local Grouping = {
-	none = {
+	{
 		label = "None",
 		func = function( addons )
 			return { { addons = addons } }
 		end
 	},
-	enabled = {
+	{
 		label = "Enabled",
 		func = function( addons )
 			local t = {
@@ -227,7 +255,7 @@ local Grouping = {
 			return t
 		end
 	},
-	ptags = {
+	{
 		label = "Primary Tags",
 		func = function( addons )
 			local t = {
@@ -238,13 +266,12 @@ local Grouping = {
 			}
 
 			for _, addon in pairs( engine.GetAddons() ) do
-				local pTags = { servercontent = "Server Content", effects = "Effects", model = "Model", gamemode = "Gamemode", npc = "NPC", tool = "Tool", vehicle = "Vehicle", weapon = "Weapon", map = "Map" }
 				local tags = string.Explode( ",", gDataTable[ addon.wsid ] && gDataTable[ addon.wsid ].tags || addon.tags )
 
 				local pTag = "Other"
 				for _, tag in pairs( tags ) do
-					if ( pTags[ tag:lower() ] ) then
-						pTag = pTags[ tag:lower() ]
+					if ( PrimaryTags[ tag:lower() ] ) then
+						pTag = PrimaryTags[ tag:lower() ]
 
 						break
 					end
@@ -257,7 +284,7 @@ local Grouping = {
 			return t
 		end
 	},
-	/*models = {
+	/*{
 		label = "Models",
 		func = function( addons )
 			local t = {
@@ -304,7 +331,9 @@ function PANEL:Init()
 	Groups:Dock( TOP )
 	Groups:SetTall( 30 )
 	Groups:DockMargin( 0, 0, 0, 5 )
-	for id, group in pairs( Grouping ) do Groups:AddChoice( "Group by: " .. group.label, id, !Groups:GetSelectedID() ) end
+	Groups:SetSortItems( false )
+	for _, group in ipairs( Grouping ) do Groups:AddChoice( "Group by: " .. group.label, group, !Groups:GetSelectedID() ) end
+	Groups:ChooseOptionID( 1 )
 	Groups.OnSelect = function( index, value, data ) self:RefreshAddons() end
 	self.Groups = Groups
 
@@ -312,7 +341,9 @@ function PANEL:Init()
 	Filters:Dock( TOP )
 	Filters:SetTall( 30 )
 	Filters:DockMargin( 0, 0, 0, 40 )
-	for id, f in pairs( AddonFilters ) do Filters:AddChoice( "Filter by: " .. f.label, id, !Filters:GetSelectedID() ) end
+	Filters:SetSortItems( false )
+	for _, f in ipairs( AddonFilters ) do Filters:AddChoice( "Filter by: " .. f.label, f, !Filters:GetSelectedID() ) end
+	Filters:ChooseOptionID( 1 )
 	Filters.OnSelect = function( index, value, data ) self:RefreshAddons() end
 	self.Filters = Filters
 
@@ -479,14 +510,14 @@ function PANEL:RefreshAddons()
 	local group = self.Groups:GetOptionData( self.Groups:GetSelectedID() )
 	local filter = self.Filters:GetOptionData( self.Filters:GetSelectedID() )
 
-	local addons = Grouping[ group ].func( engine.GetAddons() )
+	local addons = group.func( engine.GetAddons() )
 
 	for id, group in SortedPairsByMemberValue( addons, "title" ) do
 		if ( #group.addons < 1 ) then continue end
 
 		local addns = {}
 		for id, mod in pairs( group.addons ) do
-			if ( !AddonFilters[ filter ].func( mod ) ) then continue end
+			if ( !filter.func( mod ) ) then continue end
 			table.insert( addns, mod )
 		end
 
