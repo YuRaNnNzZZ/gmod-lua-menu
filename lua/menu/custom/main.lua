@@ -1,13 +1,15 @@
 
 -- Developer stuff
 concommand.Add( "lua", function( ply, cmd, args, str )
-	if ( IsInGame() ) then return end
+	-- if ( IsInGame() ) then return end
 	RunString( str )
 end )
 
 local PANEL = {}
 
 language.Add( "achievements", "Achievements" )
+language.Add( "load_game", "Load Game" )
+language.Add( "save_game", "Save Game" )
 
 surface.CreateFont( "MenuButton", {
 	font	= "Helvetica",
@@ -67,7 +69,7 @@ function PANEL:Init()
 		//draw.RoundedBox( 0, 0, 0, w, h, Color( 0, 0, 0, 200 ) )
 		self:SetPos( ScrW() / 20, math.max( ScrH() / 2 - self:GetTall() / 2, 150 ) )
 	end
-	mainButtons:SetSize( 250, 350 )
+	mainButtons:SetSize( 250, 410 )
 	self.MenuButtons = mainButtons
 
 	local Resume = vgui.Create( "MenuButton", mainButtons )
@@ -89,11 +91,28 @@ function PANEL:Init()
 
 	local PlayMP = vgui.Create( "MenuButton", mainButtons )
 	PlayMP:Dock( TOP )
-	PlayMP:DockMargin( 5, 0, 5, 0 )
+	PlayMP:DockMargin( 5, 5, 5, 0 )
 	PlayMP:SetText( "#find_mp_game" )
 	PlayMP.DoClick = function()
 		RunGameUICommand( "OpenServerBrowser" )
 	end
+
+	local LoadGame = vgui.Create( "MenuButton", mainButtons )
+	LoadGame:Dock( TOP )
+	LoadGame:DockMargin( 5, 5, 5, 0 )
+	LoadGame:SetText( "#load_game" )
+	LoadGame.DoClick = function()
+		RunGameUICommand( "OpenLoadGameDialog" )
+	end
+
+	local SaveGame = vgui.Create( "MenuButton", mainButtons )
+	SaveGame:Dock( TOP )
+	SaveGame:DockMargin( 5, 0, 5, 0 )
+	SaveGame:SetText( "#save_game" )
+	SaveGame.DoClick = function()
+		RunGameUICommand( "OpenSaveGameDialog" )
+	end
+	self.SaveGame = SaveGame
 
 	local Addons = vgui.Create( "MenuButton", mainButtons )
 	Addons:Dock( TOP )
@@ -179,9 +198,11 @@ function PANEL:Paint()
 		if ( self.IsInGame ) then
 			self.Disconnect:SetVisible( true )
 			self.Resume:SetVisible( true )
+			self.SaveGame:SetVisible( true )
 		else
 			self.Disconnect:SetVisible( false )
 			self.Resume:SetVisible( false )
+			self.SaveGame:SetVisible( false )
 		end
 
 	end
