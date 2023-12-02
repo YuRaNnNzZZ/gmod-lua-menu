@@ -375,6 +375,14 @@ function PANEL:Init()
 	DisableSelection.DoClick = function() self:DisableSelected() end
 	self.DisableSelection = DisableSelection
 
+	local UninstallSelection = vgui.Create( "DButton", Categories )
+	UninstallSelection:Dock( TOP )
+	UninstallSelection:SetText( "#Uninstall Selected" )
+	UninstallSelection:SetTall( 30 )
+	UninstallSelection:DockMargin( 0, 0, 0, 5 )
+	UninstallSelection.DoClick = function() Derma_Query( "You are about to unsubscribe from selected addons", "Warning!", "Confirm and unsubscribe", function() self:UninstallSelected() end, "Cancel", function() end ) end
+	self.UninstallSelection = UninstallSelection
+
 	----
 
 	local SelectAll = vgui.Create( "DButton", Categories )
@@ -493,6 +501,7 @@ function PANEL:Think()
 	self.ToggleMounted:SetDisabled( !anySelected )
 	self.EnableSelection:SetDisabled( !anySelected || onlyEnabled )
 	self.DisableSelection:SetDisabled( !anySelected || onlyDisabled )
+	self.UninstallSelection:SetDisabled( !anySelected )
 
 	self.SelectAllButton:SetDisabled( allSelected )
 	self.DeselectAllButton:SetDisabled( !anySelected )
@@ -518,6 +527,14 @@ function PANEL:EnableSelected()
 	for id, pnl in pairs( self.AddonList:GetChildren() ) do
 		if ( !pnl.GetSelected || !pnl:GetSelected() ) then continue end
 		steamworks.SetShouldMountAddon( pnl.Addon.wsid, true )
+	end
+	steamworks.ApplyAddons()
+end
+
+function PANEL:UninstallSelected()
+	for id, pnl in pairs( self.AddonList:GetChildren() ) do
+		if ( !pnl.GetSelected || !pnl:GetSelected() ) then continue end
+		steamworks.Unsubscribe( pnl.Addon.wsid )
 	end
 	steamworks.ApplyAddons()
 end
